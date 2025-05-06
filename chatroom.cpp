@@ -15,7 +15,7 @@ uint32_t ChatRoom::addMember(std::vector<uint8_t> &buffer) {
 
     int offset = 1;
 
-    getString(m.nick, offset);
+    getString(m.nick, buffer, offset);
     m.r = buffer[offset++];
     m.g = buffer[offset++];
     m.b = buffer[offset++];
@@ -34,7 +34,7 @@ uint32_t ChatRoom::addMember(std::vector<uint8_t> &buffer) {
 void ChatRoom::updateMember(uint32_t id, std::vector<uint8_t> &buffer) {
     member &m = members[id];
     int offset = 1;
-    getString(m.nick, offset);
+    getString(m.nick, buffer, offset);
     m.r = buffer[offset++];
     m.g = buffer[offset++];
     m.b = buffer[offset++];
@@ -111,8 +111,6 @@ void ChatRoom::encodeMember(uint32_t id, std::vector<uint8_t> &buffer, int &offs
 }
 
 void ChatRoom::encodeMember(uint32_t id, member &m, std::vector<uint8_t> &buffer, int &offset) {
-    size_t requiredSize = offset + 4 + m.nick.length() + 1 + 3 + 4 + 1;
-    
     size_t requiredSize = offset + 4 + m.nick.length() + 1 + 3 + 4 + 1;
     buffer.resize(buffer.size() + requiredSize);
 
