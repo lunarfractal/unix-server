@@ -31,12 +31,14 @@ public:
     std::unordered_map<uint32_t, member> members;
     std::unordered_map<uint32_t, message> messages;
 
-    uint32_t addMember(uint8_t *buffer);
-    void updateMember(uint32_t id, uint8_t *buffer);
+    uint32_t addMember(std::vector<uint8_t> &buffer);
+    void updateMember(uint32_t id, std::vector<uint8_t> &buffer);
+    void updateMemberMouse(uint32_t id, std::vector<uint8_t> &buffer);
+    void updateMemberClick(uint32_t id, std::vector<uint8_t> &buffer);
     void deleteMember(uint32_t id);
 
-    uint32_t addMessage(uint8_t *buffer);
-    void updateMessage(uint32_t id, uint8_t *buffer);
+    uint32_t addMessage(std::vector<uint8_t> &buffer);
+    void updateMessage(uint32_t id, std::vector<uint8_t> &buffer);
     void deleteMessage(uint32_t id);
 
     void encodeMember(uint32_t id, std::vector<uint8_t> &buffer, int &offset);

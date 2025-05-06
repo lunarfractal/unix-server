@@ -76,6 +76,8 @@ class WebSocketServer {
             m_server.set_open_handler(bind(&WebSocketServer::on_open,this,::_1));
             m_server.set_close_handler(bind(&WebSocketServer::on_close,this,::_1));
             m_server.set_message_handler(bind(&WebSocketServer::on_message,this,::_1,::_2));
+
+            m_chatroom("/home");
         }
 
         void ping(connection_hdl hdl) {
@@ -145,7 +147,7 @@ class WebSocketServer {
                 try {
                     if (
                         m_server.get_con_from_hdl(pair.first)->get_state() == websocketpp::session::state::open
-                        && pair.second.isInRoom
+                        && pair.second.roomId > 0
                         && pair.second.sentPing
                         && pair.seconf.sentHello
                     ) {
@@ -156,6 +158,26 @@ class WebSocketServer {
                         << "(" << e.what() << ")" << std::endl;
                 }
             }
+        }
+
+        void sendInfo() {
+            std::vector<uint8_t> buffer(5);
+            buffer[0] = OPCODE_INFO;
+
+            uint32_t roomId = 1000;
+
+            int offset = 1;
+
+            std::memcpy(&buffer[offset], &roomId, sizeof(uint32_t));
+            offset += sizeof(uint32_t);
+
+            chatroom.encodeAllMembers(buffer, offset);
+            buffer.resize(buffer.size() + 4);
+
+            uint32_t nt = 0x0000;
+            std::memcpy(&buffer[offset], &nt, sizeof(uint32_t));
+
+            sendAll(buffer);
         }
 
         void processMessage(std::vector<uint8_t> &buffer, connection_hdl hdl) {
@@ -182,25 +204,39 @@ class WebSocketServer {
                 }
                 case OPCODE_ENTER_ROOM:
                 {
-                    if(buffer.size() > 1) {
-                        
+                    if(ws.roomId == 0 && buffer.size() > 1) {
+                        ws.memberId = m_chatroom.addMember(buffer);;
+                        ws.roomId = 1000;
                     }
                     break;
                 }
                 case OPCODE_LEAVE_ROOM:
                 {
+                    if(ws.roomId > 0) {
+                        m_chatroom.deleteMember(ws.memberId);
+                        ws.roomId = 0;
+                    }
                     break;
                 }
                 case OPCODE_MOUSE:
                 {
+                    if(ws.roomId > 0) {
+                        m_chatroom.updateMemberMouse(ws.memberId, buffer);
+                    }
                     break;
                 }
                 case OPCODE_CLICK:
                 {
+                    if(ws.roomId > 0) {
+                        m_chatroom.updateMemberClick(ws.memberId, buffer);
+                    }
                     break;
                 }
                 case OPCODE_UPDATE_PROFILE:
                 {
+                    if(ws.roomId > 0) {
+                        m_chatroom.updateMember(ws.memberId, buffer);
+                    }
                     break;
                 }
                 case OPCODE_DISPATCH:
@@ -221,7 +257,7 @@ class WebSocketServer {
         }
 
         void on_open(connection_hdl hdl) {
-            ws_hdl ws; ws.hdl = hdl;
+            ws_hdl ws; ws.hdl = hdl; ws.roomId = 0;
             m_connections[hdl] = ws;
         }
     
@@ -241,7 +277,6 @@ class WebSocketServer {
     
         void run(uint16_t port) {
             cycleLoop();
-
             m_server.listen(port);
             m_server.start_accept();
             m_server.run();
@@ -249,6 +284,7 @@ class WebSocketServer {
     private:
         server m_server;
         std::unordered_map<connection_hdl, ws_hdl, connection_hdl_hash, connection_hdl_equal> m_connections;
+        ChatRoom m_chatroom;
 };
 
 int main() {
