@@ -76,8 +76,7 @@ void ChatRoom::deleteMember(uint32_t id) {
     members.erase(id);
 
     if(debug) {
-        std::cout << "[deleteMember] Deleting member with id: " << (int)id << " and nick: "
-            << m.nick << std::endl
+        std::cout << "[deleteMember] Deleting member with id: " << (int)id
             << "Size of member map: " << members.size()
             << std::endl;
     }
