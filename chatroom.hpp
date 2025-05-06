@@ -49,6 +49,6 @@ public:
     void encodeAllMessages(std::vector<uint8_t> &buffer, int &offset);
 
 private:
-}
+};
 
 #endif //CHATROOM_HPP
