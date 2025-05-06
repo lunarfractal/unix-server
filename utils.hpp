@@ -8,6 +8,6 @@
 #include <random>
 
 uint32_t getUniqueId();
-void getString(std::string &dest, uint8_t *buffer, size_t size, int &offset);
+void getString(std::string &dest, std::vector<uint8_t> &buffer, int &offset);
 
 #endif //UTILS_HPP
