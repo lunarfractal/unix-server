@@ -79,8 +79,6 @@ class WebSocketServer {
             m_server.set_open_handler(bind(&WebSocketServer::on_open,this,::_1));
             m_server.set_close_handler(bind(&WebSocketServer::on_close,this,::_1));
             m_server.set_message_handler(bind(&WebSocketServer::on_message,this,::_1,::_2));
-
-            m_chatroom("/home");
         }
 
         void ping(connection_hdl hdl) {
@@ -287,7 +285,7 @@ class WebSocketServer {
     private:
         server m_server;
         std::unordered_map<connection_hdl, ws_hdl, connection_hdl_hash, connection_hdl_equal> m_connections;
-        ChatRoom m_chatroom;
+        ChatRoom m_chatroom("/home");
 };
 
 int main() {
