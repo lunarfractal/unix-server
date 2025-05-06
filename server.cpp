@@ -14,6 +14,8 @@
 #include "chatroom.hpp"
 #include "utils.hpp"
 
+#define NGINX_PORT 9091
+#define WEBSOCKETPP_PORT 8081
 
 #define UPDATE_LOOP_INTERVAL 15
 #define VERSION 1
@@ -289,5 +291,5 @@ class WebSocketServer {
 
 int main() {
     WebSocketServer wsServer;
-    wsServer.run();
+    wsServer.run(WEBSOCKETPP_PORT);
 }
