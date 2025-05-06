@@ -150,7 +150,7 @@ class WebSocketServer {
                         m_server.get_con_from_hdl(pair.first)->get_state() == websocketpp::session::state::open
                         && pair.second.roomId > 0
                         && pair.second.sentPing
-                        && pair.seconf.sentHello
+                        && pair.second.sentHello
                     ) {
                         m_server.send(pair.first, buffer.data(), buffer.size(), websocketpp::frame::opcode::binary);
                     }
@@ -172,7 +172,7 @@ class WebSocketServer {
             std::memcpy(&buffer[offset], &roomId, sizeof(uint32_t));
             offset += sizeof(uint32_t);
 
-            chatroom.encodeAllMembers(buffer, offset);
+            m_chatroom.encodeAllMembers(buffer, offset);
             buffer.resize(buffer.size() + 4);
 
             uint32_t nt = 0x0000;
@@ -248,7 +248,7 @@ class WebSocketServer {
         }
 
         void cycleLoop() {
-            std::thread([]() {
+            std::thread([&this]() {
                 while (true) {
                     auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(UPDATE_LOOP_INTERVAL);
                     sendInfo();
@@ -269,7 +269,7 @@ class WebSocketServer {
         void on_message(connection_hdl hdl, server::message_ptr msg) {
             if (msg->get_opcode() == websocketpp::frame::opcode::binary) {
                 std::vector<uint8_t> buffer(msg->get_payload().begin(), msg->get_payload().end());
-                processMessage(data, hdl);
+                processMessage(buffer, hdl);
             } else {
                 std::cout << "received text message from hdl: " << hdl.lock().get()
                     << " and message: " << msg->get_payload() << std::endl;
