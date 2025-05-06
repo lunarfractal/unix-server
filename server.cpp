@@ -182,7 +182,7 @@ class WebSocketServer {
 
         void processMessage(std::vector<uint8_t> &buffer, connection_hdl hdl) {
             uint8_t op = buffer[0];
-            ws_hdl ws = m_connections[hdl];
+            ws_hdl &ws = m_connections[hdl];
             switch(op) {
                 case OPCODE_CS_PING:
                 {
