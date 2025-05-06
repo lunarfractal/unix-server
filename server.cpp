@@ -73,7 +73,7 @@ struct connection_hdl_equal {
 
 class WebSocketServer {
     public:
-        WebSocketServer() {
+        WebSocketServer() : m_chatroom("/home") {
             m_server.init_asio();
     
             m_server.set_open_handler(bind(&WebSocketServer::on_open,this,::_1));
@@ -248,7 +248,7 @@ class WebSocketServer {
         }
 
         void cycleLoop() {
-            std::thread([&this]() {
+            std::thread([this]() {
                 while (true) {
                     auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(UPDATE_LOOP_INTERVAL);
                     sendInfo();
@@ -285,7 +285,7 @@ class WebSocketServer {
     private:
         server m_server;
         std::unordered_map<connection_hdl, ws_hdl, connection_hdl_hash, connection_hdl_equal> m_connections;
-        ChatRoom m_chatroom("/home");
+        ChatRoom m_chatroom;
 };
 
 int main() {
