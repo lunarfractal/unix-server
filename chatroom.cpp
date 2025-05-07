@@ -11,7 +11,6 @@ uint32_t ChatRoom::addMember(std::vector<uint8_t> &buffer) {
     member m;
 
     uint32_t id = getUniqueId();
-    members[id] = m;
 
     int offset = 1;
 
@@ -19,6 +18,8 @@ uint32_t ChatRoom::addMember(std::vector<uint8_t> &buffer) {
     m.r = buffer[offset++];
     m.g = buffer[offset++];
     m.b = buffer[offset++];
+
+    members[id] = m;
 
    if(debug) {
         std::cout << "[addMember] Adding member with id: " << (int)id << " and nick: "
