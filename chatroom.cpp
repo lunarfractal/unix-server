@@ -88,7 +88,7 @@ void ChatRoom::encodeMember(uint32_t id, std::vector<uint8_t> &buffer, int &offs
     member &m = it->second;
 
     size_t requiredSize = offset + 4 + m.nick.length() + 1 + 3 + 4 + 1;
-    buffer.resize(buffer.size() + requiredSize);
+    buffer.resize(requiredSize);
 
     std::memcpy(&buffer[offset], &id, sizeof(uint32_t));
     offset += sizeof(uint32_t);
@@ -111,7 +111,7 @@ void ChatRoom::encodeMember(uint32_t id, std::vector<uint8_t> &buffer, int &offs
 
 void ChatRoom::encodeMember(uint32_t id, member &m, std::vector<uint8_t> &buffer, int &offset) {
     size_t requiredSize = offset + 4 + m.nick.length() + 1 + 3 + 4 + 1;
-    buffer.resize(buffer.size() + requiredSize);
+    buffer.resize(requiredSize);
 
     std::memcpy(&buffer[offset], &id, sizeof(uint32_t));
     offset += sizeof(uint32_t);
