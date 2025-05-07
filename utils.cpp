@@ -17,7 +17,6 @@ void getString(std::string &dest, std::vector<uint8_t> &buffer, int &offset) {
     dest.clear();
     while (offset < buffer.size()) {
         char c = static_cast<char>(buffer[offset++]);
-        std::cout << c << std::endl;
         if (c == '\0') break;
         dest.push_back(c);
     }
