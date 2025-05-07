@@ -79,6 +79,8 @@ class WebSocketServer {
             m_server.set_open_handler(bind(&WebSocketServer::on_open,this,::_1));
             m_server.set_close_handler(bind(&WebSocketServer::on_close,this,::_1));
             m_server.set_message_handler(bind(&WebSocketServer::on_message,this,::_1,::_2));
+
+            m_server.clear_access_channels(websocketpp::log::alevel::all);
         }
 
         void ping(connection_hdl hdl) {
