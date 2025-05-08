@@ -19,6 +19,8 @@ uint32_t ChatRoom::addMember(std::vector<uint8_t> &buffer) {
     m.g = buffer[offset++];
     m.b = buffer[offset++];
 
+    m.x = 0; m.y = 0; m.click = 0;
+
     members[id] = m;
 
    if(debug) {
