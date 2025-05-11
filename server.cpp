@@ -18,9 +18,6 @@
 #define NGINX_PORT 9091
 #define WEBSOCKETPP_PORT 8081
 
-#define UPDATE_LOOP_INTERVAL 15
-#define VERSION 1
-
 #define OPCODE_CS_PING 0x00
 #define OPCODE_CS_PONG 0x01
 #define OPCODE_SCREEN 0x02
@@ -38,8 +35,6 @@
 #define OPCODE_ENTERED_ROOM 0xA1
 #define OPCODE_INFO 0xB0
 #define OPCODE_EVENTS 0xA2
-#define OPCODE_SUCCESS 0xFE
-#define OPCODE_ERROR 0xFF
 
 using websocketpp::lib::bind;
 using websocketpp::lib::placeholders::_1;
@@ -103,41 +98,11 @@ class WebSocketServer {
                     << "(" << e.what() << ")" << std::endl;
             }
         }
-    
-        void sendVersion(connection_hdl hdl) {
-            uint8_t buffer[] = {OPCODE_VERSION, VERSION};
-            try {
-                m_server.send(hdl, buffer, sizeof(buffer), websocketpp::frame::opcode::binary);
-            } catch (websocketpp::exception const & e) {
-                std::cout << "Send failed because: "
-                    << "(" << e.what() << ")" << std::endl;
-            }
-        }
 
         void sendId(connection_hdl hdl, uint32_t id) {
             uint8_t buffer[5];
             buffer[0] = OPCODE_ENTERED_ROOM;
             std::memcpy(&buffer[1], &id, sizeof(uint32_t));
-            try {
-                m_server.send(hdl, buffer, sizeof(buffer), websocketpp::frame::opcode::binary);
-            } catch (websocketpp::exception const & e) {
-                std::cout << "Send failed because: "
-                    << "(" << e.what() << ")" << std::endl;
-            }
-        }
-
-        void sendSuccess(connection_hdl hdl) {
-            uint8_t buffer[] = {OPCODE_SUCCESS};
-            try {
-                m_server.send(hdl, buffer, sizeof(buffer), websocketpp::frame::opcode::binary);
-            } catch (websocketpp::exception const & e) {
-                std::cout << "Send failed because: "
-                    << "(" << e.what() << ")" << std::endl;
-            }
-        }
-
-        void sendError(connection_hdl hdl) {
-            uint8_t buffer[] = {OPCODE_ERROR};
             try {
                 m_server.send(hdl, buffer, sizeof(buffer), websocketpp::frame::opcode::binary);
             } catch (websocketpp::exception const & e) {
@@ -165,22 +130,7 @@ class WebSocketServer {
         }
 
         void sendInfo() {
-            std::vector<uint8_t> buffer(5);
-            buffer[0] = OPCODE_INFO;
-
-            uint32_t roomId = 1000;
-
-            int offset = 1;
-
-            std::memcpy(&buffer[offset], &roomId, sizeof(uint32_t));
-            offset += sizeof(uint32_t);
-
-            m_chatroom.encodeAllMembers(buffer, offset);
-            buffer.resize(buffer.size() + 4);
-
-            uint32_t nt = 0x0000;
-            std::memcpy(&buffer[offset], &nt, sizeof(uint32_t));
-
+            // fix this please
             sendAll(buffer);
         }
 
