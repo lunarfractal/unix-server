@@ -13,11 +13,15 @@ uint32_t getUniqueId() {
     return uniqueId;
 }
 
-void getString(std::string &dest, std::vector<uint8_t> &buffer, int &offset) {
+void getString(std::u16string &dest, const std::vector<uint8_t> &buffer, int &offset) {
     dest.clear();
-    while (offset < buffer.size()) {
-        char c = static_cast<char>(buffer[offset++]);
-        if (c == '\0') break;
+    const size_t len = buffer.size();
+
+    while (offset + 1 < len) {
+        char16_t c;
+        std::memcpy(&c, &buffer[offset], sizeof(char16_t));
+        offset += 2;
+        if (c == u'\0') break;
         dest.push_back(c);
     }
 }
