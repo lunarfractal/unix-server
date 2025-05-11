@@ -82,7 +82,24 @@ public:
 
     void getConfig(std::vector<uint8_t> &buffer) {
         buffer[0] = OPCODE_CONFIG;
-        
+
+        int offset = 1;
+        for(auto &pair: m_directories) {
+            pair.second.nick.push_back(u"\0");
+            int requiredSize = offset + 4 + (2 * pair.second.nick.length()) + 4;
+            buffer.resize(requiredSize);
+            std::memcpy(&buffer[offset], &pair.first, sizeof(uint32_t));
+            offset += 4;
+            std::memcpy(&buffer[offset], pair.second.nick.data(), pair.second.nick.length());
+            offset += pair.second.nick.length();
+            uint16_t nt = 0x00;
+            std::memcpy(&buffer[offset], &nt, sizeof(uint16_t));
+            offset += 2;
+            std::memcpy(&buffer[offset], &pair.second.parentId, sizeof(uint32_t));
+            offset += 4;
+        }
+        uint32_t nt = 0x00;
+        std::memcpy(&buffer[offset], &nt, sizeof(uint32_t));
     }
 
 private:
