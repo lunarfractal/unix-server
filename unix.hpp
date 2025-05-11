@@ -85,8 +85,7 @@ public:
 
         int offset = 1;
         for(auto &pair: m_directories) {
-            pair.second.nick.push_back(u"\0");
-            int requiredSize = offset + 4 + (2 * pair.second.nick.length()) + 4;
+            int requiredSize = offset + 4 + (2 * pair.second.nick.length()) + 2 + 4;
             buffer.resize(requiredSize);
             std::memcpy(&buffer[offset], &pair.first, sizeof(uint32_t));
             offset += 4;
