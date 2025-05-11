@@ -24,3 +24,9 @@
 | OPCODE_ENTERED_ROOM | 0xA1 | Send id to client. |
 | OPCODE_INFO | 0xB0 | Info about the server. |
 | OPCODE_EVENTS | 0xA2 | Event was dispatched. |
+
+### Packet Structure
+**Config**
+This packet starts with a uint8 header byte 0xA0. It contains information about the directories.
+`u8 [u32 [u16] u32]`
+It's a relatively simple packet. After the header byte, it has a repeating pattern of bytes, the directory id, the null terminated nick, the parent directory's id. if the directory id is 0x00, it means you should stop reading further.
