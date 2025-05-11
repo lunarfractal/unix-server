@@ -20,7 +20,7 @@
 |----------------------|--------|---------------------------|
 | OPCODE_SC_PING       | 0x00   | Sent to the client whenever the server feels like it. |
 | OPCODE_SC_PONG       | 0x01   | Sent when the client pings. |
-| OPCODE_VERSION | 0xA0 | Maybe list all default directories? |
+| OPCODE_CONFIG | 0xA0 | Maybe list all default directories? |
 | OPCODE_ENTERED_ROOM | 0xA1 | Send id to client. |
 | OPCODE_INFO | 0xB0 | Info about the server. |
 | OPCODE_EVENTS | 0xA2 | Event was dispatched. |
