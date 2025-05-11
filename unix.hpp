@@ -90,8 +90,8 @@ public:
             buffer.resize(requiredSize);
             std::memcpy(&buffer[offset], &pair.first, sizeof(uint32_t));
             offset += 4;
-            std::memcpy(&buffer[offset], pair.second.nick.data(), pair.second.nick.length());
-            offset += pair.second.nick.length();
+            std::memcpy(&buffer[offset], pair.second.nick.data(), 2 * pair.second.nick.length());
+            offset += 2 * pair.second.nick.length();
             uint16_t nt = 0x00;
             std::memcpy(&buffer[offset], &nt, sizeof(uint16_t));
             offset += 2;
