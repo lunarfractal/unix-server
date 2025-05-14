@@ -159,15 +159,15 @@ class WebSocketServer {
                 case OPCODE_ENTER_ROOM:
                 {
                     if(ws.roomId == 0 && buffer.size() > 1) {
-                        ws.memberId = m_chatroom.addMember(buffer);;
-                        ws.roomId = 1000;
+                        ws.memberId = unix.addMember(buffer);
+                        ws.roomId = 1000; // /home
                     }
                     break;
                 }
                 case OPCODE_LEAVE_ROOM:
                 {
                     if(ws.roomId > 0) {
-                        m_chatroom.deleteMember(ws.memberId);
+                        unix.deleteMember(ws.memberId);
                         ws.roomId = 0;
                     }
                     break;
@@ -175,14 +175,14 @@ class WebSocketServer {
                 case OPCODE_CURSOR:
                 {
                     if(ws.roomId > 0) {
-                        m_chatroom.updateMemberMouse(ws.memberId, buffer);
+                        unix.updateMemberCursor(ws.memberId, buffer);
                     }
                     break;
                 }
                 case OPCODE_CLICK:
                 {
                     if(ws.roomId > 0) {
-                        m_chatroom.updateMemberClick(ws.memberId, buffer);
+                        unix.updateMemberClick(ws.memberId, buffer[1]);
                     }
                     break;
                 }
@@ -193,22 +193,14 @@ class WebSocketServer {
             }
         }
 
-        void cycleLoop() {
-            std::thread([this]() {
-                while (true) {
-                    auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(UPDATE_LOOP_INTERVAL);
-                    sendInfo();
-                    std::this_thread::sleep_until(x);
-                }
-            }).detach();
-        }
-
         void on_open(connection_hdl hdl) {
             ws_hdl ws; ws.hdl = hdl; ws.roomId = 0;
             m_connections[hdl] = ws;
         }
     
         void on_close(connection_hdl hdl) {
+            ws_hdl ws = m_connections[hdl];
+            unix.deleteMember(ws.memberId);
             m_connections.erase(hdl);
         }
     
@@ -223,7 +215,6 @@ class WebSocketServer {
         }
     
         void run(uint16_t port) {
-            cycleLoop();
             m_server.listen(port);
             m_server.start_accept();
             m_server.run();
@@ -231,7 +222,7 @@ class WebSocketServer {
     private:
         server m_server;
         std::unordered_map<connection_hdl, ws_hdl, connection_hdl_hash, connection_hdl_equal> m_connections;
-        ChatRoom m_chatroom;
+        Unix unix;
 };
 
 int main() {
