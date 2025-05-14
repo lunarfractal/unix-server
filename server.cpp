@@ -3,16 +3,12 @@
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
 
-#include <chrono>
-#include <random>
-#include <thread>
-#include <functional>
 #include <iostream>
 #include <unordered_map>
 #include <vector>
 #include <cstring>
 
-#include "chatroom.hpp"
+#include "unix.hpp"
 #include "utils.hpp"
 
 #define NGINX_PORT 9091
@@ -69,7 +65,7 @@ struct connection_hdl_equal {
 
 class WebSocketServer {
     public:
-        WebSocketServer() : m_chatroom("/home") {
+        WebSocketServer() {
             m_server.init_asio();
     
             m_server.set_open_handler(bind(&WebSocketServer::on_open,this,::_1));
@@ -129,9 +125,13 @@ class WebSocketServer {
             }
         }
 
-        void sendInfo() {
-            // fix this please
-            sendAll(buffer);
+        void sendBuffer(connection_hdl hdl, std::vector<uint8_t> &buffer) {
+            try {
+                m_server.send(hdl, buffer.data(), buffer.size(), websocketpp::frame::opcode::binary);
+            } catch (websocketpp::exception const & e) {
+                std::cout << "Send failed because: "
+                    << "(" << e.what() << ")" << std::endl;
+            }
         }
 
         void processMessage(std::vector<uint8_t> &buffer, connection_hdl hdl) {
@@ -199,7 +199,7 @@ class WebSocketServer {
         }
     
         void on_close(connection_hdl hdl) {
-            ws_hdl ws = m_connections[hdl];
+            ws_hdl &ws = m_connections[hdl];
             unix.deleteMember(ws.memberId);
             m_connections.erase(hdl);
         }
