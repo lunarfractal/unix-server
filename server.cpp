@@ -33,6 +33,8 @@
 #define OPCODE_EVENTS 0xA2
 
 #define FLAG_CURSOR 0x00
+#define FLAG_DIRECTORY 0x01
+#define FLAG_FILE 0x02
 
 using websocketpp::lib::bind;
 using websocketpp::lib::placeholders::_1;
@@ -67,7 +69,7 @@ struct connection_hdl_equal {
 
 class WebSocketServer {
     public:
-        WebSocketServer() {
+        WebSocketServer() : unix("system") {
             m_server.init_asio();
     
             m_server.set_open_handler(bind(&WebSocketServer::on_open,this,::_1));
@@ -115,6 +117,24 @@ class WebSocketServer {
                     if (
                         m_server.get_con_from_hdl(pair.first)->get_state() == websocketpp::session::state::open
                         && pair.second.roomId > 0
+                        && pair.second.sentPing
+                        && pair.second.sentHello
+                    ) {
+                        m_server.send(pair.first, buffer.data(), buffer.size(), websocketpp::frame::opcode::binary);
+                    }
+                } catch (websocketpp::exception const & e) {
+                    std::cout << "Send failed because: "
+                        << "(" << e.what() << ")" << std::endl;
+                }
+            }
+        }
+
+        void sendToRoom(uint32_t roomId, std::vector<uint8_t> &buffer) {
+            for (auto &pair: m_connections) {
+                try {
+                    if (
+                        m_server.get_con_from_hdl(pair.first)->get_state() == websocketpp::session::state::open
+                        && pair.second.roomId == roomId
                         && pair.second.sentPing
                         && pair.second.sentHello
                     ) {
@@ -190,7 +210,7 @@ class WebSocketServer {
                         std::memcpy(&buffer[2], &ws.memberId, sizeof(uint32_t));
                         std::memcpy(&buffer[6], &x, sizeof(uint16_t));
                         std::memcpy(&buffer[8], &y, sizeof(uint16_t));
-                        sendAll(buffer);
+                        sendToRoom(ws.roomId, buffer);
                     }
                     break;
                 }
