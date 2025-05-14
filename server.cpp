@@ -32,6 +32,8 @@
 #define OPCODE_INFO 0xB0
 #define OPCODE_EVENTS 0xA2
 
+#define FLAG_CURSOR 0x00
+
 using websocketpp::lib::bind;
 using websocketpp::lib::placeholders::_1;
 using websocketpp::lib::placeholders::_2;
