@@ -175,7 +175,20 @@ class WebSocketServer {
                 case OPCODE_CURSOR:
                 {
                     if(ws.roomId > 0) {
-                        unix.updateMemberCursor(ws.memberId, buffer);
+                        uint16_t x, y;
+                        std::memcpy(&x, &buffer[1], sizeof(uint16_t));
+                        std::memcpy(&y, &buffer[3], sizeof(uint16_t));
+                        unix.setMemberCursor(ws.memberId, x, y);
+                        // this just normalizes the value for different screen dimensions
+                        x = x / ws.screen_width * 65535;
+                        y = y / ws.screen_height * 65535;
+                        std::vector<uint8_t> buffer(1 + 1 + 4 + 2 + 2);
+                        buffer[0] = OPCODE_INFO;
+                        buffer[1] = FLAG_CURSOR;
+                        std::memcpy(&buffer[2], &ws.memberId, sizeof(uint32_t));
+                        std::memcpy(&buffer[6], &x, sizeof(uint16_t));
+                        std::memcpy(&buffer[8], &y, sizeof(uint16_t));
+                        sendAll(buffer);
                     }
                     break;
                 }
