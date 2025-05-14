@@ -80,6 +80,12 @@ public:
         m_members.erase(id);
     }
 
+    uint16_t* getMemberCursor(uint32_t id) {
+        member_hdl &m = m_members[id];
+        uint16_t* arr = [m.x, m.y];
+        return arr;
+    }
+
     void getConfigDirectories(std::vector<uint8_t> &buffer) {
         buffer[0] = OPCODE_CONFIG;
 
