@@ -51,10 +51,9 @@ public:
         }
     }
 
-    void setMemberCursor(uint32_t id, std::vector<uint8_t> &buffer) {
-        member_hdl &m = m_members[id];int offset=1;
-        std::memcpy(&m.x, &buffer[offset], sizeof(uint16_t));offset+=sizeof(uint16_t);
-        std::memcpy(&m.y, &buffer[offset], sizeof(uint16_t));
+    void setMemberCursor(uint32_t id, uint16_t x, uint16_t y) {
+        member_hdl &m = m_members[id];
+        m.x = x; m.y = y;
         if(debug) {
             std::cout << "[Unix::setMemberCursor]: Set " << m.nick << " with id: " << (int)id
                 << " and coordinates: " << (int)m.x << " " << (int)m.y
@@ -80,10 +79,8 @@ public:
         m_members.erase(id);
     }
 
-    uint16_t* getMemberCursor(uint32_t id) {
-        member_hdl &m = m_members[id];
-        uint16_t* arr = [m.x, m.y];
-        return arr;
+    member_hdl getMember(uint32_t id) {
+        return m_members[id];
     }
 
     void getConfigDirectories(std::vector<uint8_t> &buffer) {
