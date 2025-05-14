@@ -23,7 +23,7 @@
 #define OPCODE_SCREEN 0x02
 #define OPCODE_ENTER_ROOM 0x03
 #define OPCODE_LEAVE_ROOM 0x04
-#define OPCODE_MOUSE 0x05
+#define OPCODE_CURSOR 0x05
 #define OPCODE_CLICK 0x06
 #define OPCODE_NICK 0x07
 #define OPCODE_COLOR 0x08
@@ -172,7 +172,7 @@ class WebSocketServer {
                     }
                     break;
                 }
-                case OPCODE_MOUSE:
+                case OPCODE_CURSOR:
                 {
                     if(ws.roomId > 0) {
                         m_chatroom.updateMemberMouse(ws.memberId, buffer);
@@ -183,13 +183,6 @@ class WebSocketServer {
                 {
                     if(ws.roomId > 0) {
                         m_chatroom.updateMemberClick(ws.memberId, buffer);
-                    }
-                    break;
-                }
-                case OPCODE_UPDATE_PROFILE:
-                {
-                    if(ws.roomId > 0) {
-                        m_chatroom.updateMember(ws.memberId, buffer);
                     }
                     break;
                 }
