@@ -33,30 +33,30 @@ public:
         return id;
     }
 
-    void updateMemberNick(uint32_t id, std::vector<uint8_t> &buffer) {
+    void setMemberNick(uint32_t id, std::vector<uint8_t> &buffer) {
         member_hdl &m = m_members[id];int offset=1;getString(m.nick, offset);
         if(debug) {
-            std::cout << "[Unix::updateMemberNick]: Updated " << m.nick
+            std::cout << "[Unix::setMemberNick]: Updated " << m.nick
                 << " with id: " << (int)id
                 << std::endl;
         }
     }
 
-    void updateMemberColor(uint32_t id, std::vector<uint8_t> &buffer) {
+    void setMemberColor(uint32_t id, std::vector<uint8_t> &buffer) {
         member_hdl &m = m_members[id];int offset=1;m.r=buffer[offset++];m.g=buffer[offset++];m.b=buffer[offset++];
         if(debug) {
-            std::cout << "[Unix::updateMemberColor]: Updated " << m.nick << " with id: " << (int)id
+            std::cout << "[Unix::setMemberColor]: Updated " << m.nick << " with id: " << (int)id
                 << " and color: " << << (int)m.r << " " << (int)m.g << " " << (int)m.b
                 << std::endl;
         }
     }
 
-    void setMemberMouse(uint32_t id, std::vector<uint8_t> &buffer) {
+    void setMemberCursor(uint32_t id, std::vector<uint8_t> &buffer) {
         member_hdl &m = m_members[id];int offset=1;
         std::memcpy(&m.x, &buffer[offset], sizeof(uint16_t));offset+=sizeof(uint16_t);
         std::memcpy(&m.y, &buffer[offset], sizeof(uint16_t));
         if(debug) {
-            std::cout << "[Unix::setMemberMouse]: Set " << m.nick << " with id: " << (int)id
+            std::cout << "[Unix::setMemberCursor]: Set " << m.nick << " with id: " << (int)id
                 << " and coordinates: " << (int)m.x << " " << (int)m.y
                 << std::endl;
         }
@@ -80,7 +80,7 @@ public:
         m_members.erase(id);
     }
 
-    void getConfig(std::vector<uint8_t> &buffer) {
+    void getConfigDirectories(std::vector<uint8_t> &buffer) {
         buffer[0] = OPCODE_CONFIG;
 
         int offset = 1;
