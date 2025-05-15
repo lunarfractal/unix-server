@@ -36,6 +36,9 @@
 #define FLAG_DIRECTORY 0x01
 #define FLAG_FILE 0x02
 
+#define EVENT_CURSOR_ADD 0x00
+#define EVENT_CURSOR_DELETE 0x01
+
 #undef unix
 
 using websocketpp::lib::bind;
@@ -194,6 +197,26 @@ class WebSocketServer {
                         ws.roomId = 1000; // /home
                         sendId(hdl, ws.memberId);
                         ping(hdl);
+                        // add cursor to everyone's screen
+                        std::vector<uint8_t> buffer(1+1+4+1+2+2+m.nick.size()+2+3);
+                        buffer[0] = OPCODE_EVENTS;
+                        buffer[1] = FLAG_CURSOR;
+                        int offset = 2;
+                        std::memcpy(&buffer[offset], &ws.memberId, sizeof(uint32_t));
+                        offset += sizeof(uint32_t);
+                        buffer[offset++] = EVENT_CURSOR_ADD;
+                        member_hdl &m = unix.getMember(ws.memberId);
+                        std::memcpy(&buffer[offset], &m.x, sizeof(uint16_t));
+                        offset += sizeof(uint16_t);
+                        std::memcpy(&buffer[offset], &m.y, sizeof(uint16_t));
+                        offset += sizeof(uint16_t);
+                        std::memcpy(&buffer[offset], m.nick.data(), m.nick.size());
+                        offset += m.nick.size();
+                        uint16_t nt = 0x00;
+                        std::memcpy(&buffer[offset], &nt, sizeof(uint16_t));
+                        offset += sizeof(uint16_t);
+                        buffer[offset++] = m.r;buffer[offset++] = m.g;buffer[offset++] = m.b;
+                        sendToRoom(ws.roomId, buffer);
                     }
                     break;
                 }
@@ -211,10 +234,10 @@ class WebSocketServer {
                         uint16_t x, y;
                         std::memcpy(&x, &buffer[1], sizeof(uint16_t));
                         std::memcpy(&y, &buffer[3], sizeof(uint16_t));
-                        unix.setMemberCursor(ws.memberId, x, y);
                         // this just normalizes the value for different screen dimensions
                         x = (x * 65535) / ws.screen_width;
                         y = (y * 65535) / ws.screen_height;
+                        unix.setMemberCursor(ws.memberId, x, y);
                         std::vector<uint8_t> buffer(1 + 1 + 4 + 2 + 2);
                         buffer[0] = OPCODE_INFO;
                         buffer[1] = FLAG_CURSOR;
