@@ -1,14 +1,14 @@
 #include "utils.hpp"
 
-void getString(std::u16string &dest, std::vector<uint8_t> &buffer, int &offset) {
+void getString(std::vector<uint16_t> &dest, std::vector<uint8_t> &buffer, int &offset) {
     dest.clear();
     const size_t len = buffer.size();
 
     while (offset + 1 < len) {
-        char16_t c;
-        std::memcpy(&c, &buffer[offset], sizeof(char16_t));
+        uint16_t c;
+        std::memcpy(&c, &buffer[offset], sizeof(uint16_t));
         offset += 2;
-        if (c == u'\0') break;
+        if (c == 0x00) break;
         dest.push_back(c);
     }
 }
