@@ -6,6 +6,7 @@ Unix::Unix(u16string n) : nick(n) {}
 
 uint32_t Unix::addMember(std::vector<uint8_t> &buffer) {
     uint32_t id = getUniqueId();member_hdl m;int offset=1;getString(m.nick, buffer, offset);m.click=m.r=m.g=m.b=m.x=m.y=0;
+    m_members[id] = m;
     if(debug) {
         std::cout << "[Unix::addMember]: Added id: " << (int)id
             << std::endl;
