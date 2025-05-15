@@ -198,6 +198,7 @@ class WebSocketServer {
                         sendId(hdl, ws.memberId);
                         ping(hdl);
                         // add cursor to everyone's screen
+                        member_hdl m = unix.getMember(ws.memberId);
                         std::vector<uint8_t> buffer(1+1+4+1+2+2+m.nick.size()+2+3+4);
                         buffer[0] = OPCODE_EVENTS;
                         buffer[1] = FLAG_CURSOR;
@@ -205,7 +206,6 @@ class WebSocketServer {
                         std::memcpy(&buffer[offset], &ws.memberId, sizeof(uint32_t));
                         offset += sizeof(uint32_t);
                         buffer[offset++] = EVENT_CURSOR_ADD;
-                        member_hdl &m = unix.getMember(ws.memberId);
                         std::memcpy(&buffer[offset], &m.x, sizeof(uint16_t));
                         offset += sizeof(uint16_t);
                         std::memcpy(&buffer[offset], &m.y, sizeof(uint16_t));
