@@ -36,6 +36,8 @@
 #define FLAG_DIRECTORY 0x01
 #define FLAG_FILE 0x02
 
+#undef unix
+
 using websocketpp::lib::bind;
 using websocketpp::lib::placeholders::_1;
 using websocketpp::lib::placeholders::_2;
@@ -69,7 +71,7 @@ struct connection_hdl_equal {
 
 class WebSocketServer {
     public:
-        WebSocketServer() : unix("system") {
+        WebSocketServer() : unix(u"system") {
             m_server.init_asio();
     
             m_server.set_open_handler(bind(&WebSocketServer::on_open,this,::_1));
@@ -156,6 +158,12 @@ class WebSocketServer {
             }
         }
 
+        void sendConfigCursors(connection_hdl hdl) {
+            std::vector<uint8_t> buffer(10);
+            unix.getConfigCursors(buffer);
+            sendBuffer(hdl, buffer);
+        }
+
         void processMessage(std::vector<uint8_t> &buffer, connection_hdl hdl) {
             uint8_t op = buffer[0];
             ws_hdl &ws = m_connections[hdl];
@@ -168,6 +176,7 @@ class WebSocketServer {
                 case OPCODE_CS_PONG:
                 {
                     std::cout << "Ping!" << std::endl;
+                    sendConfigCursors(hdl);
                     break;
                 }
                 case OPCODE_SCREEN:
@@ -183,6 +192,8 @@ class WebSocketServer {
                     if(ws.roomId == 0 && buffer.size() > 1) {
                         ws.memberId = unix.addMember(buffer);
                         ws.roomId = 1000; // /home
+                        sendId(hdl, ws.memberId);
+                        ping(hdl);
                     }
                     break;
                 }
@@ -217,7 +228,7 @@ class WebSocketServer {
                 case OPCODE_CLICK:
                 {
                     if(ws.roomId > 0) {
-                        unix.updateMemberClick(ws.memberId, buffer[1]);
+                        unix.setMemberClick(ws.memberId, buffer[1]);
                     }
                     break;
                 }
