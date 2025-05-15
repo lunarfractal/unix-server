@@ -2,7 +2,7 @@
 
 bool debug = true;
 
-Unix::Unix(std::u16string n) : nick(n) {}
+Unix::Unix(u16string n) : nick(n) {}
 
 uint32_t Unix::addMember(std::vector<uint8_t> &buffer) {
     uint32_t id = getUniqueId();member_hdl m;int offset=1;getString(m.nick, buffer, offset);m.click=m.r=m.g=m.b=m.x=m.y=0;
@@ -69,7 +69,7 @@ void Unix::getConfigCursors(std::vector<uint8_t> &buffer) {
 
     int offset = 2;
     for(auto &pair: m_members) {
-        int requiredSize = offset + 4 + 2 + 2 + 2 * pair.second.nick.length() + 2 + 3;
+        int requiredSize = offset + 4 + 2 + 2 + 2 * pair.second.nick.size() + 2 + 3;
         buffer.resize(requiredSize);
         std::memcpy(&buffer[offset], &pair.first, sizeof(uint32_t));
         offset += sizeof(uint32_t);
@@ -77,8 +77,8 @@ void Unix::getConfigCursors(std::vector<uint8_t> &buffer) {
         offset += sizeof(uint16_t);
         std::memcpy(&buffer[offset], &pair.second.y, sizeof(uint16_t));
         offset += sizeof(uint16_t);
-        std::memcpy(&buffer[offset], pair.second.nick.data(), 2 * pair.second.nick.length());
-        offset += 2 * pair.second.nick.length();
+        std::memcpy(&buffer[offset], pair.second.nick.data(), 2 * pair.second.nick.size());
+        offset += 2 * pair.second.nick.size();
         uint16_t nt = 0x00;
         std::memcpy(&buffer[offset], &nt, sizeof(uint16_t));
         offset += 2;
@@ -94,12 +94,12 @@ void Unix::getConfigDirectories(std::vector<uint8_t> &buffer) {
 
     int offset = 1;
     for(auto &pair: m_directories) {
-        int requiredSize = offset + 4 + (2 * pair.second.nick.length()) + 2 + 4;
+        int requiredSize = offset + 4 + (2 * pair.second.nick.size()) + 2 + 4;
         buffer.resize(requiredSize);
         std::memcpy(&buffer[offset], &pair.first, sizeof(uint32_t));
         offset += 4;
-        std::memcpy(&buffer[offset], pair.second.nick.data(), 2 * pair.second.nick.length());
-        offset += 2 * pair.second.nick.length();
+        std::memcpy(&buffer[offset], pair.second.nick.data(), 2 * pair.second.nick.size());
+        offset += 2 * pair.second.nick.size();
         uint16_t nt = 0x00;
         std::memcpy(&buffer[offset], &nt, sizeof(uint16_t));
         offset += 2;
