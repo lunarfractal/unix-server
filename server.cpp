@@ -198,7 +198,7 @@ class WebSocketServer {
                         sendId(hdl, ws.memberId);
                         ping(hdl);
                         // add cursor to everyone's screen
-                        std::vector<uint8_t> buffer(1+1+4+1+2+2+m.nick.size()+2+3);
+                        std::vector<uint8_t> buffer(1+1+4+1+2+2+m.nick.size()+2+3+4);
                         buffer[0] = OPCODE_EVENTS;
                         buffer[1] = FLAG_CURSOR;
                         int offset = 2;
@@ -216,6 +216,8 @@ class WebSocketServer {
                         std::memcpy(&buffer[offset], &nt, sizeof(uint16_t));
                         offset += sizeof(uint16_t);
                         buffer[offset++] = m.r;buffer[offset++] = m.g;buffer[offset++] = m.b;
+                        uint32_t unt = 0x00;
+                        std::memcpy(&buffer[offset], &unt, sizeof(uint32_t));
                         sendToRoom(ws.roomId, buffer);
                     }
                     break;
@@ -224,6 +226,14 @@ class WebSocketServer {
                 {
                     if(ws.roomId > 0) {
                         unix.deleteMember(ws.memberId);
+                        std::vector<uint8_t> buffer(1+1+4+4);
+                        buffer[0] = OPCODE_EVENTS;
+                        buffer[1] = FLAG_CURSOR;
+                        std::memcpy(&buffer[2], &ws.memberId, sizeof(uint32_t));
+                        uint32_t nt = 0x00;
+                        std::memcpy(&buffer[6], &nt, sizeof(uint32_t));
+                        sendToRoom(ws.roomId, buffer);
+                        ws.memberId = 0;
                         ws.roomId = 0;
                     }
                     break;
@@ -270,6 +280,13 @@ class WebSocketServer {
         void on_close(connection_hdl hdl) {
             ws_hdl &ws = m_connections[hdl];
             unix.deleteMember(ws.memberId);
+            std::vector<uint8_t> buffer(1+1+4+4);
+            buffer[0] = OPCODE_EVENTS;
+            buffer[1] = FLAG_CURSOR;
+            std::memcpy(&buffer[2], &ws.memberId, sizeof(uint32_t));
+            uint32_t nt = 0x00;
+            std::memcpy(&buffer[6], &nt, sizeof(uint32_t));
+            sendToRoom(ws.roomId, buffer);
             m_connections.erase(hdl);
         }
     
