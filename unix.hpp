@@ -9,16 +9,17 @@
 
 #include "utils.hpp"
 
+typedef std::vector<uint16_t> u16string;
 
-typedef struct {std::u16string nick;uint8_t click,r,g,b;uint16_t x,y;} member_hdl;
-typedef struct {uint32_t authorId;std::u16string content;uint8_t type;double timestamp;} message_hdl;
-typedef struct {uint32_t parentId;std::u16string nick;std::unordered_map<uint32_t, message_hdl> messages;} directory_hdl;
+typedef struct {u16string nick;uint8_t click,r,g,b;uint16_t x,y;} member_hdl;
+typedef struct {uint32_t authorId;u16string content;uint8_t type;double timestamp;} message_hdl;
+typedef struct {uint32_t parentId;u16string nick;std::unordered_map<uint32_t, message_hdl> messages;} directory_hdl;
 
 class Unix {
 public:
-    Unix(std::u16string n);
+    Unix(u16string n);
 
-    std::u16string nick;
+    u16string nick;
 
     uint32_t addMember(std::vector<uint8_t> &buffer);
 
