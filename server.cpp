@@ -71,7 +71,7 @@ struct connection_hdl_equal {
 
 class WebSocketServer {
     public:
-        WebSocketServer() : unix(u"system") {
+        WebSocketServer() {
             m_server.init_asio();
     
             m_server.set_open_handler(bind(&WebSocketServer::on_open,this,::_1));
@@ -213,8 +213,8 @@ class WebSocketServer {
                         std::memcpy(&y, &buffer[3], sizeof(uint16_t));
                         unix.setMemberCursor(ws.memberId, x, y);
                         // this just normalizes the value for different screen dimensions
-                        x = x / ws.screen_width * 65535;
-                        y = y / ws.screen_height * 65535;
+                        x = (x * 65535) / ws.screen_width;
+                        y = (y * 65535) / ws.screen_height;
                         std::vector<uint8_t> buffer(1 + 1 + 4 + 2 + 2);
                         buffer[0] = OPCODE_INFO;
                         buffer[1] = FLAG_CURSOR;

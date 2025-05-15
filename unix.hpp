@@ -17,10 +17,6 @@ typedef struct {uint32_t parentId;u16string nick;std::unordered_map<uint32_t, me
 
 class Unix {
 public:
-    Unix(u16string n);
-
-    u16string nick;
-
     uint32_t addMember(std::vector<uint8_t> &buffer);
 
     void setMemberNick(uint32_t id, std::vector<uint8_t> &buffer);
