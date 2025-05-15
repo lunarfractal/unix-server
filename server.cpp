@@ -226,12 +226,13 @@ class WebSocketServer {
                 {
                     if(ws.roomId > 0) {
                         unix.deleteMember(ws.memberId);
-                        std::vector<uint8_t> buffer(1+1+4+4);
+                        std::vector<uint8_t> buffer(1+1+4+1+4);
                         buffer[0] = OPCODE_EVENTS;
                         buffer[1] = FLAG_CURSOR;
                         std::memcpy(&buffer[2], &ws.memberId, sizeof(uint32_t));
+                        buffer[6] = EVENT_CURSOR_DELETE;
                         uint32_t nt = 0x00;
-                        std::memcpy(&buffer[6], &nt, sizeof(uint32_t));
+                        std::memcpy(&buffer[7], &nt, sizeof(uint32_t));
                         sendToRoom(ws.roomId, buffer);
                         ws.memberId = 0;
                         ws.roomId = 0;
@@ -273,19 +274,20 @@ class WebSocketServer {
         }
 
         void on_open(connection_hdl hdl) {
-            ws_hdl ws; ws.hdl = hdl; ws.roomId = 0;
+            ws_hdl ws; ws.hdl = hdl; ws.roomId = 0; ws.memberId = 0;
             m_connections[hdl] = ws;
         }
     
         void on_close(connection_hdl hdl) {
             ws_hdl &ws = m_connections[hdl];
             unix.deleteMember(ws.memberId);
-            std::vector<uint8_t> buffer(1+1+4+4);
+            std::vector<uint8_t> buffer(1+1+4+1+4);
             buffer[0] = OPCODE_EVENTS;
             buffer[1] = FLAG_CURSOR;
             std::memcpy(&buffer[2], &ws.memberId, sizeof(uint32_t));
+            buffer[6] = EVENT_CURSOR_DELETE;
             uint32_t nt = 0x00;
-            std::memcpy(&buffer[6], &nt, sizeof(uint32_t));
+            std::memcpy(&buffer[7], &nt, sizeof(uint32_t));
             sendToRoom(ws.roomId, buffer);
             m_connections.erase(hdl);
         }
