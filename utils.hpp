@@ -9,6 +9,6 @@
 #include <random>
 
 uint32_t getUniqueId();
-void getString(std::u16string &dest, std::vector<uint8_t> &buffer, int &offset);
+void getString(std::vector<uint16_t> &dest, std::vector<uint8_t> &buffer, int &offset);
 
 #endif //UTILS_HPP
