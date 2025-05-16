@@ -14,6 +14,10 @@ bool IO::isInGame() {
     return roomId > 0 && memberId > 0 && sentHello && sentPing;
 }
 
+bool IO::didSendHello() {
+    return sentHello && sentPing;
+}
+
 void IO::leave() {
     roomId = 0;
     memberId = 0;
