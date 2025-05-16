@@ -12,7 +12,7 @@
 typedef std::vector<uint16_t> u16string;
 
 typedef struct {u16string nick;uint8_t click,r,g,b;uint16_t x,y;} member_hdl;
-typedef struct {uint32_t authorId;u16string content;uint8_t type;double timestamp;} message_hdl;
+typedef struct {uint32_t authorId;uint32_t roomId;u16string content;uint8_t type;double timestamp;} message_hdl;
 typedef struct {uint32_t parentId;u16string nick;} directory_hdl;
 
 class Unix {
@@ -30,6 +30,14 @@ public:
     void deleteMember(uint32_t id);
 
     member_hdl getMember(uint32_t id);
+
+    uint32_t createDirectory(std::vector<uint8_t> buffer);
+
+    void deleteDirectory(uint32_t id);
+
+    bool existsDirectory(uint32_t id);
+
+    direcotry_hdl getDirectory(uint32_t id);
 
     void getConfigCursors(std::vector<uint8_t> &buffer);
     void getConfigDirectories(std::vector<uint8_t> &buffer);
