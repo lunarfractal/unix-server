@@ -6,8 +6,8 @@
 constexpr uint8_t OPCODE_CS_PING = 0x00;
 constexpr uint8_t OPCODE_CS_PONG = 0x01;
 constexpr uint8_t OPCODE_DIMENSIONS = 0x02;
-constexpr uint8_t OPCODE_ENTER_ROOM = 0x03;
-constexpr uint8_t OPCODE_LEAVE_ROOM = 0x04;
+constexpr uint8_t OPCODE_ENTER_GAME = 0x03;
+constexpr uint8_t OPCODE_LEAVE_GAME = 0x04;
 constexpr uint8_t OPCODE_CURSOR = 0x05;
 constexpr uint8_t OPCODE_CLICK = 0x06;
 constexpr uint8_t OPCODE_NICK = 0x07;
@@ -17,7 +17,7 @@ constexpr uint8_t OPCODE_DISPATCH = 0x09;
 constexpr uint8_t OPCODE_SC_PING = 0x00;
 constexpr uint8_t OPCODE_SC_PONG = 0x01;
 constexpr uint8_t OPCODE_CONFIG = 0xA0;
-constexpr uint8_t OPCODE_ENTERED_ROOM = 0xA1;
+constexpr uint8_t OPCODE_ENTERED_GAME = 0xA1;
 constexpr uint8_t OPCODE_INFO = 0xB0;
 constexpr uint8_t OPCODE_EVENTS = 0xA2;
 
