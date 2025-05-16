@@ -11,5 +11,5 @@ void IO::unlock() {
 }
 
 bool IO::isInGame() {
-    return roomId > 0 && memberId > 0;
+    return roomId > 0 && memberId > 0 && sentHello && sentPing;
 }
