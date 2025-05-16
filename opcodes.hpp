@@ -21,9 +21,9 @@ constexpr uint8_t OPCODE_ENTERED_GAME = 0xA1;
 constexpr uint8_t OPCODE_INFO = 0xB0;
 constexpr uint8_t OPCODE_EVENTS = 0xA2;
 
-constexpr uint8_t FLAG_CURSOR = 0x00;
-constexpr uint8_t FLAG_DIRECTORY = 0x01;
-constexpr uint8_t FLAG_FILE = 0x02;
+constexpr uint8_t FLAG_CURSOR = 0x11;
+constexpr uint8_t FLAG_DIRECTORY = 0x12;
+constexpr uint8_t FLAG_FILE = 0x13;
 
 constexpr uint8_t EVENT_CURSOR_ADD = 0x00;
 constexpr uint8_t EVENT_CURSOR_DELETE = 0x01;
