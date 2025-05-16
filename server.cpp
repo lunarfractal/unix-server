@@ -14,31 +14,6 @@
 #define NGINX_PORT 9091
 #define WEBSOCKETPP_PORT 8081
 
-#define OPCODE_CS_PING 0x00
-#define OPCODE_CS_PONG 0x01
-#define OPCODE_SCREEN 0x02
-#define OPCODE_ENTER_ROOM 0x03
-#define OPCODE_LEAVE_ROOM 0x04
-#define OPCODE_CURSOR 0x05
-#define OPCODE_CLICK 0x06
-#define OPCODE_NICK 0x07
-#define OPCODE_COLOR 0x08
-#define OPCODE_DISPATCH 0x09
-
-#define OPCODE_SC_PING 0x00
-#define OPCODE_SC_PONG 0x01
-#define OPCODE_CONFIG 0xA0
-#define OPCODE_ENTERED_ROOM 0xA1
-#define OPCODE_INFO 0xB0
-#define OPCODE_EVENTS 0xA2
-
-#define FLAG_CURSOR 0x00
-#define FLAG_DIRECTORY 0x01
-#define FLAG_FILE 0x02
-
-#define EVENT_CURSOR_ADD 0x00
-#define EVENT_CURSOR_DELETE 0x01
-
 #undef unix
 
 using websocketpp::lib::bind;
