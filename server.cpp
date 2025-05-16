@@ -10,6 +10,7 @@
 
 #include "unix.hpp"
 #include "utils.hpp"
+#include "opcodes.hpp"
 
 #define NGINX_PORT 9091
 #define WEBSOCKETPP_PORT 8081
@@ -24,28 +25,7 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 typedef websocketpp::connection_hdl connection_hdl;
 typedef server::message_ptr message_ptr;
 
-struct ws_hdl {
-    bool sentHello;
-    bool sentPing;
-    uint16_t screen_width, screen_height;
-    uint32_t memberId;
-    uint32_t roomId;
-    connection_hdl hdl;
-};
-
-struct connection_hdl_hash {
-    std::size_t operator()(const websocketpp::connection_hdl& hdl) const {
-        return std::hash<std::uintptr_t>()(
-            reinterpret_cast<std::uintptr_t>(hdl.lock().get())
-        );
-    }
-};
-
-struct connection_hdl_equal {
-    bool operator()(const websocketpp::connection_hdl& lhs, const websocketpp::connection_hdl& rhs) const {
-        return !lhs.owner_before(rhs) && !rhs.owner_before(lhs);  // compares weak_ptr identity
-    }
-};
+typedef struct {bool sentHello;bool sentPing;uint16_t screen_width, screen_height;uint32_t memberId;uint32_t roomId;connection_hdl hdl;} ws_hdl;
 
 class WebSocketServer {
     public:
@@ -284,6 +264,8 @@ class WebSocketServer {
         }
     private:
         server m_server;
+        typedef struct {std::size_t operator()(const websocketpp::connection_hdl& hdl) const {return std::hash<std::uintptr_t>()(reinterpret_cast<std::uintptr_t>(hdl.lock().get()));}} connection_hdl_hash;
+        typedef struct {bool operator()(const websocketpp::connection_hdl& lhs, const websocketpp::connection_hdl& rhs) const {return !lhs.owner_before(rhs) && !rhs.owner_before(lhs); }} connection_hdl_equal;
         std::unordered_map<connection_hdl, ws_hdl, connection_hdl_hash, connection_hdl_equal> m_connections;
         Unix unix;
 };
