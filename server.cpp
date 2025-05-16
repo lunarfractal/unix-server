@@ -144,7 +144,7 @@ class WebSocketServer {
                 }
                 case OPCODE_ENTER_ROOM:
                 {
-                    if(ws.roomId == 0 && buffer.size() > 1) {
+                    if(!ws.isInGame() && ws.didSendHello() && buffer.size() > 1) {
                         ws.memberId = unix.addMember(buffer);
                         ws.roomId = 1000; // /home
                         sendId(hdl, ws.memberId);
@@ -176,7 +176,7 @@ class WebSocketServer {
                 }
                 case OPCODE_LEAVE_ROOM:
                 {
-                    if(ws.roomId > 0) {
+                    if(ws.isInGame()) {
                         unix.deleteMember(ws.memberId);
                         std::vector<uint8_t> buffer(1+1+4+1+4);
                         buffer[0] = OPCODE_EVENTS;
@@ -192,7 +192,7 @@ class WebSocketServer {
                 }
                 case OPCODE_CURSOR:
                 {
-                    if(ws.roomId > 0) {
+                    if(ws.isInGame()) {
                         uint16_t x, y;
                         std::memcpy(&x, &buffer[1], sizeof(uint16_t));
                         std::memcpy(&y, &buffer[3], sizeof(uint16_t));
@@ -212,7 +212,7 @@ class WebSocketServer {
                 }
                 case OPCODE_CLICK:
                 {
-                    if(ws.roomId > 0) {
+                    if(ws.isInGame()) {
                         unix.setMemberClick(ws.memberId, buffer[1]);
                     }
                     break;
