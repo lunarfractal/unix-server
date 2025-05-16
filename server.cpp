@@ -61,7 +61,7 @@ class WebSocketServer {
 
         void sendId(connection_hdl hdl, uint32_t id) {
             uint8_t buffer[5];
-            buffer[0] = OPCODE_ENTERED_ROOM;
+            buffer[0] = OPCODE_ENTERED_GAME;
             std::memcpy(&buffer[1], &id, sizeof(uint32_t));
             try {
                 m_server.send(hdl, buffer, sizeof(buffer), websocketpp::frame::opcode::binary);
@@ -134,7 +134,7 @@ class WebSocketServer {
                     sendConfigCursors(hdl);
                     break;
                 }
-                case OPCODE_SCREEN:
+                case OPCODE_DIMENSIONS:
                 {
                     if(buffer.size() >= 5) {
                         std::memcpy(&ws.screen_width, &buffer[1], sizeof(uint16_t));
@@ -142,7 +142,7 @@ class WebSocketServer {
                     }
                     break;
                 }
-                case OPCODE_ENTER_ROOM:
+                case OPCODE_ENTER_GAME:
                 {
                     if(!ws.isInGame() && ws.didSendHello() && buffer.size() > 1) {
                         ws.memberId = unix.addMember(buffer);
@@ -174,7 +174,7 @@ class WebSocketServer {
                     }
                     break;
                 }
-                case OPCODE_LEAVE_ROOM:
+                case OPCODE_LEAVE_GAME:
                 {
                     if(ws.isInGame()) {
                         unix.deleteMember(ws.memberId);
