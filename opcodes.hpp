@@ -39,5 +39,7 @@ constexpr uint8_t DISPATCH_LIST_DIRECTORY = 0x02;
 constexpr uint8_t EVENT_CURSOR_ADD = 0x00;
 constexpr uint8_t EVENT_CURSOR_DELETE = 0x01;
 constexpr uint8_t EVENT_CHANGE_DIRECTORY = 0x02;
+constexpr uint8_t EVENT_ENTER_DIRECTORY = 0x03;
+
 
 #endif //OPCODES_HPP
