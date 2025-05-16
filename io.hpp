@@ -16,6 +16,7 @@ public:
     void lock();
     void unlock();
     bool isInGame();
+    void leave();
 private:
     connection_hdl &hdl;
     std::string ip;
