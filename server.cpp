@@ -119,6 +119,40 @@ class WebSocketServer {
             sendBuffer(hdl, buffer);
         }
 
+        void processDispatch(std::vector<uint8_t> &buffer, connection_hdl hdl, IO &ws) {
+            uint8_t _byte = buffer[1];
+
+            int offset = 2;
+            switch(_byte) {
+                case DISPATCH_CHANGE_DIRECTORY:
+                {
+                    if(ws.isInGame() && buffer.size() >= 5) {
+                        uint32_t originalRoomId = ws.roomId;
+                        uint32_t directoryId;
+                        std::memcpy(&directoryId, &buffer[offset], sizeof(uint32_t));
+                        offset += 4;
+                        if(unix.existsDirectory(directoryId)) {
+                            ws.roomId = directoryId; // is it that simple? probably
+                        }
+                        // now send it to everyone
+                        std::vector<uint8_t> buffer(1+1+4+1+4);
+                        buffer[0] = OPCODE_EVENTS;
+                        buffer[1] = FLAG_CURSOR;
+                        std::memcpy(&buffer[2], &ws.memberId, sizeof(uint32_t));
+                        buffer[6] = EVENT_CHANGE_DIRECTORY;
+                        uint32_t nt = 0x00;
+                        std::memcpy(&buffer[7], &nt, sizeof(uint32_t));
+                        sendToRoom(originalRoomId, buffer);
+                    }
+                    break;
+                }
+                case DISPATCH_LIST_DIRECTORY:
+                {
+                    break;
+                }
+            }
+        }
+
         void processMessage(std::vector<uint8_t> &buffer, connection_hdl hdl) {
             uint8_t op = buffer[0];
             IO &ws = m_connections[hdl];
@@ -219,6 +253,7 @@ class WebSocketServer {
                 }
                 case OPCODE_DISPATCH:
                 {
+                    processDispatch(buffer, hdl, ws);
                     break;
                 }
             }
