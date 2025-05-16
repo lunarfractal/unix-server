@@ -133,16 +133,23 @@ class WebSocketServer {
                         offset += 4;
                         if(unix.existsDirectory(directoryId)) {
                             ws.roomId = directoryId; // is it that simple? probably
+                            // now send it to everyone
+                            std::vector<uint8_t> buffer(1+1+4+1+4);
+                            buffer[0] = OPCODE_EVENTS;
+                            buffer[1] = FLAG_CURSOR;
+                            std::memcpy(&buffer[2], &ws.memberId, sizeof(uint32_t));
+                            buffer[6] = EVENT_CHANGE_DIRECTORY;
+                            uint32_t nt = 0x00;
+                            std::memcpy(&buffer[7], &nt, sizeof(uint32_t));
+                            sendToRoom(originalRoomId, buffer);
+                            std::vector<uint8_t> ebuffer(1+1+4+1+4);
+                            ebuffer[0] = OPCODE_EVENTS;
+                            ebuffer[1] = FLAG_CURSOR;
+                            std::memcpy(&ebuffer[2], &ws.memberId, sizeof(uint32_t));
+                            ebuffer[6] = EVENT_ENTER_DIRECTORY;
+                            std::memcpy(&ebuffer[7], &nt, sizeof(uint32_t));
+                            sendToRoom(directoryId, ebuffer);
                         }
-                        // now send it to everyone
-                        std::vector<uint8_t> buffer(1+1+4+1+4);
-                        buffer[0] = OPCODE_EVENTS;
-                        buffer[1] = FLAG_CURSOR;
-                        std::memcpy(&buffer[2], &ws.memberId, sizeof(uint32_t));
-                        buffer[6] = EVENT_CHANGE_DIRECTORY;
-                        uint32_t nt = 0x00;
-                        std::memcpy(&buffer[7], &nt, sizeof(uint32_t));
-                        sendToRoom(originalRoomId, buffer);
                     }
                     break;
                 }
