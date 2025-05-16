@@ -13,7 +13,7 @@ typedef std::vector<uint16_t> u16string;
 
 typedef struct {u16string nick;uint8_t click,r,g,b;uint16_t x,y;} member_hdl;
 typedef struct {uint32_t authorId;u16string content;uint8_t type;double timestamp;} message_hdl;
-typedef struct {uint32_t parentId;u16string nick;std::unordered_map<uint32_t, message_hdl> messages;} directory_hdl;
+typedef struct {uint32_t parentId;u16string nick;} directory_hdl;
 
 class Unix {
 public:
