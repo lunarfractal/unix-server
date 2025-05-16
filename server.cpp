@@ -11,6 +11,7 @@
 #include "unix.hpp"
 #include "utils.hpp"
 #include "opcodes.hpp"
+#include "io.hpp"
 
 #define NGINX_PORT 9091
 #define WEBSOCKETPP_PORT 8081
@@ -25,7 +26,6 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 typedef websocketpp::connection_hdl connection_hdl;
 typedef server::message_ptr message_ptr;
 
-typedef struct {bool sentHello;bool sentPing;uint16_t screen_width, screen_height;uint32_t memberId;uint32_t roomId;connection_hdl hdl;} ws_hdl;
 
 class WebSocketServer {
     public:
@@ -76,9 +76,7 @@ class WebSocketServer {
                 try {
                     if (
                         m_server.get_con_from_hdl(pair.first)->get_state() == websocketpp::session::state::open
-                        && pair.second.roomId > 0
-                        && pair.second.sentPing
-                        && pair.second.sentHello
+                        && pair.second.isInGame()
                     ) {
                         m_server.send(pair.first, buffer.data(), buffer.size(), websocketpp::frame::opcode::binary);
                     }
@@ -95,8 +93,7 @@ class WebSocketServer {
                     if (
                         m_server.get_con_from_hdl(pair.first)->get_state() == websocketpp::session::state::open
                         && pair.second.roomId == roomId
-                        && pair.second.sentPing
-                        && pair.second.sentHello
+                        && pair.second.isInGame()
                     ) {
                         m_server.send(pair.first, buffer.data(), buffer.size(), websocketpp::frame::opcode::binary);
                     }
@@ -124,7 +121,7 @@ class WebSocketServer {
 
         void processMessage(std::vector<uint8_t> &buffer, connection_hdl hdl) {
             uint8_t op = buffer[0];
-            ws_hdl &ws = m_connections[hdl];
+            IO &ws = m_connections[hdl];
             switch(op) {
                 case OPCODE_CS_PING:
                 {
@@ -189,8 +186,7 @@ class WebSocketServer {
                         uint32_t nt = 0x00;
                         std::memcpy(&buffer[7], &nt, sizeof(uint32_t));
                         sendToRoom(ws.roomId, buffer);
-                        ws.memberId = 0;
-                        ws.roomId = 0;
+                        ws.leave();
                     }
                     break;
                 }
@@ -229,12 +225,12 @@ class WebSocketServer {
         }
 
         void on_open(connection_hdl hdl) {
-            ws_hdl ws; ws.hdl = hdl; ws.roomId = 0; ws.memberId = 0;
+            IO ws(hdl);
             m_connections[hdl] = ws;
         }
     
         void on_close(connection_hdl hdl) {
-            ws_hdl &ws = m_connections[hdl];
+            IO &ws = m_connections[hdl];
             unix.deleteMember(ws.memberId);
             std::vector<uint8_t> buffer(1+1+4+1+4);
             buffer[0] = OPCODE_EVENTS;
@@ -266,7 +262,7 @@ class WebSocketServer {
         server m_server;
         typedef struct {std::size_t operator()(const websocketpp::connection_hdl& hdl) const {return std::hash<std::uintptr_t>()(reinterpret_cast<std::uintptr_t>(hdl.lock().get()));}} connection_hdl_hash;
         typedef struct {bool operator()(const websocketpp::connection_hdl& lhs, const websocketpp::connection_hdl& rhs) const {return !lhs.owner_before(rhs) && !rhs.owner_before(lhs); }} connection_hdl_equal;
-        std::unordered_map<connection_hdl, ws_hdl, connection_hdl_hash, connection_hdl_equal> m_connections;
+        std::unordered_map<connection_hdl, IO, connection_hdl_hash, connection_hdl_equal> m_connections;
         Unix unix;
 };
 
