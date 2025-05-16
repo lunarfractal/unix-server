@@ -6,7 +6,7 @@ typedef websocketpp::connection_hdl connection_hdl;
 
 class IO {
 public:
-    IO(connection_hdl &hdl);
+    IO(connection_hdl &x);
     bool sentHello;
     bool sentPing;
     bool locked;
