@@ -12,6 +12,7 @@ public:
     bool locked;
     uint16_t screen_width, screen_height;
     uint32_t memberId, roomId;
+    uint16_t pingCount, pongCount;
 
     void lock();
     void unlock();
@@ -21,6 +22,6 @@ public:
 private:
     connection_hdl &hdl;
     std::string ip;
-}
+};
 
 #endif //IO_HPP
