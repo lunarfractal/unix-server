@@ -117,19 +117,21 @@ class WebSocketServer {
             buffer[1] = FLAG_CURSOR;
             int offset = 2;
             for(auto &pair: unixSystem.members) {
+                buffer.resize(offset + 4 + 2 + 2 + 2 * pair.second.nick.size() + 2 + 3);
                 std::memcpy(&buffer[offset], &pair.first, sizeof(uint32_t));
                 offset += 4;
                 std::memcpy(&buffer[offset], &pair.second.x, sizeof(uint16_t));
                 offset += 2;
                 std::memcpy(&buffer[offset], &pair.second.y, sizeof(uint16_t));
                 offset += 2;
-                std::memcpy(&buffer[offset], pair.second.nick.data(), pair.second.nick.length());
-                offset += pair.second.nick.length();
+                std::memcpy(&buffer[offset], pair.second.nick.data(), 2 * pair.second.nick.size());
+                offset += 2 * pair.second.nick.size();
                 uint16_t nt = 0x00;
                 std::memcpy(&buffer[offset], &nt, sizeof(uint16_t));
                 offset += 2;
                 buffer[offset++] = pair.second.r;buffer[offset++] = pair.second.g;buffer[offset++] = pair.second.b;
             }
+            buffer.resize(offset + 4);
             uint32_t unt = 0x00;
             std::memcpy(&buffer[offset], &unt, sizeof(uint32_t));
             sendBuffer(hdl, buffer);
@@ -147,7 +149,7 @@ class WebSocketServer {
                         uint32_t directoryId;
                         std::memcpy(&directoryId, &buffer[offset], sizeof(uint32_t));
                         offset += 4;
-                        if(unixSystem.directories.find(directoryId != unix.directories.end()) {
+                        if(unixSystem.directories.find(directoryId) != unixSystem.directories.end()) {
                             io.roomId = directoryId; // is it that simple? probably
                             // now send it to everyone
                             std::vector<uint8_t> buffer(1+1+4+1+4);
@@ -238,7 +240,7 @@ class WebSocketServer {
                 }
                 case OPCODE_LEAVE_GAME:
                 {
-                    if(ws.isInGame()) {
+                    if(io.isInGame()) {
                         unixSystem.members.erase(io.memberId);
                         std::vector<uint8_t> buffer(1+1+4+1+4);
                         buffer[0] = OPCODE_EVENTS;
@@ -254,7 +256,7 @@ class WebSocketServer {
                 }
                 case OPCODE_CURSOR:
                 {
-                    if(ws.isInGame()) {
+                    if(io.isInGame()) {
                         uint16_t x, y;
                         std::memcpy(&x, &buffer[1], sizeof(uint16_t));
                         std::memcpy(&y, &buffer[3], sizeof(uint16_t));
@@ -288,7 +290,7 @@ class WebSocketServer {
         }
 
         void on_open(connection_hdl hdl) {
-            IO io(hdl);
+            IO io;
             m_connections[hdl] = io;
         }
 

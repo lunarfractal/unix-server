@@ -1,6 +1,6 @@
 #include "io.hpp"
 
-IO::IO(connection_hdl &x) : hdl(x), sentPing(false), sentHello(false), locked(false), pingCount(0), pongCount(0), screen_width(0), screen_height(0), memberId(0), roomId(0), ip("") {}
+IO::IO() : sentPing(false), sentHello(false), locked(false), pingCount(0), pongCount(0), screen_width(0), screen_height(0), memberId(0), roomId(0) {}
 
 void IO::lock() {
     locked = true;

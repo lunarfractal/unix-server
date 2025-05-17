@@ -6,7 +6,7 @@ typedef websocketpp::connection_hdl connection_hdl;
 
 class IO {
 public:
-    IO(connection_hdl &x);
+    IO();
     bool sentHello;
     bool sentPing;
     bool locked;
@@ -20,8 +20,6 @@ public:
     bool didSendHello();
     void leave();
 private:
-    connection_hdl &hdl;
-    std::string ip;
 };
 
 #endif //IO_HPP
