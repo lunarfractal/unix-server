@@ -211,7 +211,9 @@ class WebSocketServer {
                 {
                     if(!io.isInGame() && io.didSendHello() && buffer.size() > 1) {
                         uint32_t id = getUniqueId();io.memberId = id;io.roomId = 3;/* /home */
-                        Member m = {{}, 0, 0, 0, 0, 0};unixSystem.members[id] = m;
+                        Member m = {{}, 0, 0, 0, 0, 0};int offset = 1;
+                        getString(m.nick, buffer, offset);
+                        unixSystem.members[id] = m;
                         sendId(hdl, id);
                         ping(hdl);
                         // add cursor to everyone's screen
